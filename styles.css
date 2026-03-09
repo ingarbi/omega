@@ -601,3 +601,24 @@ h3 {
     opacity: 1;
     transform: translateY(0);
 }
+
+/* ===== АНИМАЦИЯ ВРАЩЕНИЯ ДЛЯ ВЕНТИЛЯТОРОВ ===== */
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.product-card:hover .fa-fan {
+    animation: spin 3s linear infinite;
+}
+.hero-image:hover .fa-fan {
+    animation: spin 3s linear infinite;
+}
+.fa-fan:hover {
+    animation: spin 3s linear infinite;
+}
+
+/* ===== УВЕЛИЧЕНИЕ РАЗМЕРА ВЕНТИЛЯТОРА В ГЛАВНОМ ЭКРАНЕ ===== */
+.hero-image .fa-fan {
+    font-size: 17.28rem; /* +20% от предыдущего увеличенного размера */
+}

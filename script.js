@@ -19,7 +19,8 @@
     // Подсветка активного пункта меню
     const navLinks = document.querySelectorAll('.nav a[href^="#"]');
     const sections = document.querySelectorAll('section[id]');
-    window.addEventListener('scroll', () => {
+    
+    function updateActiveMenu() {
         let current = '';
         sections.forEach(section => {
             const sectionTop = section.offsetTop - 100;
@@ -28,6 +29,10 @@
                 current = section.getAttribute('id');
             }
         });
+        // Если ни одна секция не определена (в самом верху), считаем текущей "production"
+        if (!current && sections.length > 0) {
+            current = 'production';
+        }
         navLinks.forEach(link => {
             link.classList.remove('active');
             const href = link.getAttribute('href').substring(1);
@@ -41,7 +46,14 @@
         } else {
             header.classList.remove('scrolled');
         }
-    });
+    }
+
+    // Вызываем при скролле
+    window.addEventListener('scroll', updateActiveMenu);
+    // Вызываем сразу после загрузки DOM, чтобы установить начальное состояние
+    document.addEventListener('DOMContentLoaded', updateActiveMenu);
+    // Также вызываем после полной загрузки страницы (на случай, если контент влияет на высоты)
+    window.addEventListener('load', updateActiveMenu);
 
     // Анимация появления
     const fadeElements = document.querySelectorAll('.fade-up');
