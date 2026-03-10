@@ -13,6 +13,10 @@
                     block: 'start'
                 });
             }
+            // Закрываем мобильное меню после клика на ссылку
+            if (header && header.classList.contains('menu-open')) {
+                header.classList.remove('menu-open');
+            }
         });
     });
 
@@ -29,7 +33,6 @@
                 current = section.getAttribute('id');
             }
         });
-        // Если ни одна секция не определена (в самом верху), считаем текущей "production"
         if (!current && sections.length > 0) {
             current = 'production';
         }
@@ -48,11 +51,8 @@
         }
     }
 
-    // Вызываем при скролле
     window.addEventListener('scroll', updateActiveMenu);
-    // Вызываем сразу после загрузки DOM, чтобы установить начальное состояние
     document.addEventListener('DOMContentLoaded', updateActiveMenu);
-    // Также вызываем после полной загрузки страницы (на случай, если контент влияет на высоты)
     window.addEventListener('load', updateActiveMenu);
 
     // Анимация появления
@@ -69,38 +69,40 @@
 
     // Обработка формы
     const form = document.getElementById('contactForm');
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const name = document.getElementById('name').value.trim();
-        const phone = document.getElementById('phone').value.trim();
-        const comment = document.getElementById('comment').value.trim();
-        const channel = document.querySelector('input[name="channel"]:checked').value;
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const comment = document.getElementById('comment').value.trim();
+            const channel = document.querySelector('input[name="channel"]:checked').value;
 
-        if (!name || !phone) {
-            alert('Пожалуйста, заполните имя и телефон');
-            return;
-        }
+            if (!name || !phone) {
+                alert('Пожалуйста, заполните имя и телефон');
+                return;
+            }
 
-        const text = `Здравствуйте! Меня зовут ${name}. Телефон: ${phone}. Комментарий: ${comment || '—'}`;
-        const encodedText = encodeURIComponent(text);
-        const companyPhone = '74951234567';
+            const text = `Здравствуйте! Меня зовут ${name}. Телефон: ${phone}. Комментарий: ${comment || '—'}`;
+            const encodedText = encodeURIComponent(text);
+            const companyPhone = '74951234567';
 
-        let url = '';
-        if (channel === 'whatsapp') {
-            url = `https://wa.me/${companyPhone}?text=${encodedText}`;
-        } else if (channel === 'telegram') {
-            const telegramUsername = 'omega_vent';
-            url = `https://t.me/${telegramUsername}?start=${encodedText}`;
-        } else if (channel === 'viber') {
-            url = `viber://chat?number=%2B${companyPhone}&text=${encodedText}`;
-        }
+            let url = '';
+            if (channel === 'whatsapp') {
+                url = `https://wa.me/${companyPhone}?text=${encodedText}`;
+            } else if (channel === 'telegram') {
+                const telegramUsername = 'omega_vent';
+                url = `https://t.me/${telegramUsername}?start=${encodedText}`;
+            } else if (channel === 'viber') {
+                url = `viber://chat?number=%2B${companyPhone}&text=${encodedText}`;
+            }
 
-        if (url) {
-            window.open(url, '_blank');
-        }
-        alert('Спасибо! Сейчас вы будете перенаправлены в выбранное приложение для отправки сообщения.');
-        form.reset();
-    });
+            if (url) {
+                window.open(url, '_blank');
+            }
+            alert('Спасибо! Сейчас вы будете перенаправлены в выбранное приложение для отправки сообщения.');
+            form.reset();
+        });
+    }
 
     // Перезагрузка по клику на логотип
     const logo = document.getElementById('logo');
@@ -118,5 +120,31 @@
                 target.scrollIntoView({ behavior: 'smooth' });
             }, 300);
         }
+    }
+
+    // *** БУРГЕР-МЕНЮ ***
+    const burger = document.getElementById('burger');
+    const header = document.getElementById('header');
+    const nav = document.getElementById('nav');
+
+    if (burger && header && nav) {
+        // Открытие/закрытие по клику на бургер
+        burger.addEventListener('click', function(e) {
+            e.stopPropagation();
+            header.classList.toggle('menu-open');
+        });
+
+        // Закрытие меню при клике вне его (на документе)
+        document.addEventListener('click', function(event) {
+            if (header.classList.contains('menu-open') && 
+                !header.contains(event.target)) {
+                header.classList.remove('menu-open');
+            }
+        });
+
+        // Предотвращаем закрытие при клике внутри меню
+        nav.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
     }
 })();
