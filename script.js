@@ -52,7 +52,6 @@
     }
 
     window.addEventListener('scroll', updateActiveMenu);
-    document.addEventListener('DOMContentLoaded', updateActiveMenu);
     window.addEventListener('load', updateActiveMenu);
 
     // Анимация появления
@@ -146,5 +145,136 @@
         nav.addEventListener('click', function(e) {
             e.stopPropagation();
         });
+    }
+
+    // *** СЛАЙДЕРЫ ДЛЯ КАРТОЧЕК ТОВАРОВ ***
+    function initProductSliders() {
+        const productCards = document.querySelectorAll('.product-card');
+        productCards.forEach(card => {
+            const sliderImages = card.querySelectorAll('.slider-image');
+            const prevBtn = card.querySelector('.slider-prev');
+            const nextBtn = card.querySelector('.slider-next');
+            if (!sliderImages.length || !prevBtn || !nextBtn) return;
+
+            let currentIndex = 0;
+            const totalImages = sliderImages.length;
+
+            function showImage(index) {
+                sliderImages.forEach((img, i) => {
+                    img.classList.toggle('active', i === index);
+                });
+            }
+
+            prevBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                currentIndex = (currentIndex - 1 + totalImages) % totalImages;
+                showImage(currentIndex);
+            });
+
+            nextBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                currentIndex = (currentIndex + 1) % totalImages;
+                showImage(currentIndex);
+            });
+
+            // Открытие модального окна при клике на изображение
+            sliderImages.forEach((img, index) => {
+                img.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    openModal(card, index);
+                });
+            });
+        });
+    }
+
+    // *** МОДАЛЬНОЕ ОКНО (LIGHTBOX) ***
+    const modal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('modalImage');
+    const modalClose = document.querySelector('.modal-close');
+    const modalPrev = document.querySelector('.modal-prev');
+    const modalNext = document.querySelector('.modal-next');
+
+    let currentModalSlider = null; // ссылка на слайдер (карточку)
+    let currentModalIndex = 0;
+
+    function openModal(card, index) {
+        currentModalSlider = card.querySelector('.product-slider');
+        currentModalIndex = index;
+        updateModalImage();
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden'; // запрещаем скролл страницы
+    }
+
+    function closeModal() {
+        modal.classList.remove('show');
+        document.body.style.overflow = ''; // возвращаем скролл
+    }
+
+    function updateModalImage() {
+        if (!currentModalSlider) return;
+        const images = currentModalSlider.querySelectorAll('.slider-image');
+        if (images.length && currentModalIndex >= 0 && currentModalIndex < images.length) {
+            modalImage.src = images[currentModalIndex].src;
+        }
+    }
+
+    function prevModalImage() {
+        if (!currentModalSlider) return;
+        const images = currentModalSlider.querySelectorAll('.slider-image');
+        if (images.length) {
+            currentModalIndex = (currentModalIndex - 1 + images.length) % images.length;
+            updateModalImage();
+        }
+    }
+
+    function nextModalImage() {
+        if (!currentModalSlider) return;
+        const images = currentModalSlider.querySelectorAll('.slider-image');
+        if (images.length) {
+            currentModalIndex = (currentModalIndex + 1) % images.length;
+            updateModalImage();
+        }
+    }
+
+    if (modalClose) {
+        modalClose.addEventListener('click', closeModal);
+    }
+
+    if (modalPrev) {
+        modalPrev.addEventListener('click', (e) => {
+            e.stopPropagation();
+            prevModalImage();
+        });
+    }
+
+    if (modalNext) {
+        modalNext.addEventListener('click', (e) => {
+            e.stopPropagation();
+            nextModalImage();
+        });
+    }
+
+    // Закрытие по клику вне изображения (на фон)
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    // Закрытие по клавише ESC
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('show')) {
+            closeModal();
+        }
+    });
+
+    // Запускаем инициализацию слайдеров после загрузки DOM
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initProductSliders);
+    } else {
+        initProductSliders();
     }
 })();
