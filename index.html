@@ -18,7 +18,7 @@
             <div class="logo" id="logo">
                 <span>Ω</span> OMEGA
             </div>
-            <!-- Бургер-меню (только на мобильных) -->
+            <!-- Бургер-меню -->
             <div class="burger-menu" id="burger">
                 <span></span>
                 <span></span>
@@ -35,7 +35,7 @@
         </div>
     </header>
 
-    <!-- Основное (Hero) с иконкой вентилятора -->
+    <!-- Основное (Hero) -->
     <section class="hero" id="production">
         <div class="container">
             <div class="hero-content fade-up">
@@ -59,7 +59,6 @@
             <div class="about-grid">
                 <div class="about-text fade-up">
                     <p>OMEGA — производитель вентиляционных материалов для монтажных, строительных и торговых компаний. Мы выпускаем воздуховоды, гофры, фасонные элементы и сопутствующие изделия, обеспечивая стабильное качество, точные размеры и удобные сроки поставки.</p>
-                    <!-- Бейджи полностью удалены -->
                 </div>
                 <div class="advantages">
                     <div class="advantage-item fade-up">
@@ -97,9 +96,9 @@
                         </div>
                         <button class="slider-prev"><i class="fas fa-chevron-left"></i></button>
                         <button class="slider-next"><i class="fas fa-chevron-right"></i></button>
-                        <!-- Контейнер для точек-индикаторов -->
-                        <div class="slider-dots"></div>
                     </div>
+                    <!-- Точки вынесены из слайдера -->
+                    <div class="slider-dots"></div>
                     <h3>Гибкие воздуховоды</h3>
                     <p>Для больших предприятий, где требуется воздухоотвод из системы вентиляции.</p>
                     <a href="#request-form" class="btn-small">Запросить каталог</a>
@@ -119,8 +118,8 @@
                         </div>
                         <button class="slider-prev"><i class="fas fa-chevron-left"></i></button>
                         <button class="slider-next"><i class="fas fa-chevron-right"></i></button>
-                        <div class="slider-dots"></div>
                     </div>
+                    <div class="slider-dots"></div>
                     <h3>Оцинкованные воздуховоды</h3>
                     <p>Круглые воздуховоды из оцинкованной стали. Выпускаются с поршневыми задвижками.</p>
                     <a href="#request-form" class="btn-small">Запросить каталог</a>
@@ -140,8 +139,8 @@
                         </div>
                         <button class="slider-prev"><i class="fas fa-chevron-left"></i></button>
                         <button class="slider-next"><i class="fas fa-chevron-right"></i></button>
-                        <div class="slider-dots"></div>
                     </div>
+                    <div class="slider-dots"></div>
                     <h3>ПВХ воздуховоды</h3>
                     <p>Пластиковые воздуховоды с опорными заслонками для установки в системах вентиляции.</p>
                     <a href="#request-form" class="btn-small">Запросить каталог</a>
@@ -161,15 +160,15 @@
                         </div>
                         <button class="slider-prev"><i class="fas fa-chevron-left"></i></button>
                         <button class="slider-next"><i class="fas fa-chevron-right"></i></button>
-                        <div class="slider-dots"></div>
                     </div>
+                    <div class="slider-dots"></div>
                     <h3>Решетки и диффузоры</h3>
                     <p>Вентиляционные фаски и детали для создания различных форм вентиляционных систем.</p>
                     <a href="#request-form" class="btn-small">Запросить каталог</a>
                 </div>
             </div>
 
-            <!-- Форма запроса расчёта -->
+            <!-- Форма запроса -->
             <div id="request-form" class="request-form fade-up">
                 <h3 style="margin-bottom: 30px; text-align: center;">Запрос расчёта стоимости</h3>
                 <form id="contactForm">
@@ -183,7 +182,6 @@
                         <textarea id="comment" placeholder="Комментарий"></textarea>
                     </div>
 
-                    <!-- Выбор канала -->
                     <div class="channel-selector">
                         <label>
                             <input type="radio" name="channel" value="whatsapp" checked> <i class="fab fa-whatsapp" style="color:#25D366;"></i> WhatsApp
@@ -198,7 +196,6 @@
 
                     <button type="submit" class="btn btn-primary" style="width:100%;">Отправить заявку</button>
                 </form>
-                <!-- Список преимуществ полностью удалён -->
             </div>
         </div>
     </section>
@@ -263,19 +260,19 @@
         </div>
     </footer>
 
-    <!-- Модальное окно для просмотра изображений -->
+    <!-- Модальное окно -->
     <div class="modal" id="imageModal">
         <div class="modal-content">
             <span class="modal-close">&times;</span>
             <div class="modal-body">
                 <img src="" alt="Просмотр" class="modal-image" id="modalImage">
+                <!-- Стрелки скрыты через CSS -->
                 <button class="modal-prev"><i class="fas fa-chevron-left"></i></button>
                 <button class="modal-next"><i class="fas fa-chevron-right"></i></button>
             </div>
         </div>
     </div>
 
-    <!-- Подключаем внешний JavaScript -->
     <script src="script.js"></script>
 </body>
 </html>

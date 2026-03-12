@@ -13,7 +13,8 @@
                     block: 'start'
                 });
             }
-            // Закрываем мобильное меню после клика на ссылку
+            // Закрываем мобильное меню
+            const header = document.getElementById('header');
             if (header && header.classList.contains('menu-open')) {
                 header.classList.remove('menu-open');
             }
@@ -127,13 +128,11 @@
     const nav = document.getElementById('nav');
 
     if (burger && header && nav) {
-        // Открытие/закрытие по клику на бургер
         burger.addEventListener('click', function(e) {
             e.stopPropagation();
             header.classList.toggle('menu-open');
         });
 
-        // Закрытие меню при клике вне его (на документе)
         document.addEventListener('click', function(event) {
             if (header.classList.contains('menu-open') && 
                 !header.contains(event.target)) {
@@ -141,13 +140,12 @@
             }
         });
 
-        // Предотвращаем закрытие при клике внутри меню
         nav.addEventListener('click', function(e) {
             e.stopPropagation();
         });
     }
 
-    // *** СЛАЙДЕРЫ ДЛЯ КАРТОЧЕК ТОВАРОВ С ТОЧКАМИ И СВАЙПАМИ ***
+    // *** СЛАЙДЕРЫ ***
     function initProductSliders() {
         const productCards = document.querySelectorAll('.product-card');
         productCards.forEach(card => {
@@ -155,7 +153,7 @@
             const sliderImages = slider.querySelectorAll('.slider-image');
             const prevBtn = card.querySelector('.slider-prev');
             const nextBtn = card.querySelector('.slider-next');
-            const dotsContainer = slider.querySelector('.slider-dots');
+            const dotsContainer = card.querySelector('.slider-dots'); // теперь ищем в карточке
             if (!sliderImages.length) return;
 
             let currentIndex = 0;
@@ -194,7 +192,7 @@
                 showImage(currentIndex);
             }
 
-            // Кнопки "предыдущий/следующий"
+            // Кнопки
             if (prevBtn && nextBtn) {
                 prevBtn.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -208,30 +206,29 @@
                 });
             }
 
-            // Обработка свайпов
+            // Свайпы
             let touchStartX = 0;
             let touchEndX = 0;
-            const minSwipeDistance = 50; // минимальное расстояние для свайпа
+            const minSwipeDistance = 50;
 
             slider.addEventListener('touchstart', (e) => {
-                touchStartX = e.changedTouches[0].screenX;
+                touchStartX = e.touches[0].screenX;
             }, { passive: true });
 
             slider.addEventListener('touchend', (e) => {
                 touchEndX = e.changedTouches[0].screenX;
                 const distance = touchEndX - touchStartX;
                 if (Math.abs(distance) > minSwipeDistance) {
+                    e.preventDefault();
                     if (distance > 0) {
-                        // свайп вправо → предыдущее
                         goToSlide(currentIndex - 1);
                     } else {
-                        // свайп влево → следующее
                         goToSlide(currentIndex + 1);
                     }
                 }
-            }, { passive: true });
+            }, { passive: false });
 
-            // Открытие модального окна при клике на изображение
+            // Открытие модалки
             sliderImages.forEach((img, index) => {
                 img.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -245,14 +242,14 @@
         });
     }
 
-    // *** МОДАЛЬНОЕ ОКНО (LIGHTBOX) ***
+    // *** МОДАЛКА ***
     const modal = document.getElementById('imageModal');
     const modalImage = document.getElementById('modalImage');
     const modalClose = document.querySelector('.modal-close');
     const modalPrev = document.querySelector('.modal-prev');
     const modalNext = document.querySelector('.modal-next');
 
-    let currentModalSlider = null; // ссылка на слайдер (карточку)
+    let currentModalSlider = null;
     let currentModalIndex = 0;
 
     function openModal(card, index) {
@@ -260,12 +257,12 @@
         currentModalIndex = index;
         updateModalImage();
         modal.classList.add('show');
-        document.body.style.overflow = 'hidden'; // запрещаем скролл страницы
+        document.body.style.overflow = 'hidden';
     }
 
     function closeModal() {
         modal.classList.remove('show');
-        document.body.style.overflow = ''; // возвращаем скролл
+        document.body.style.overflow = '';
     }
 
     function updateModalImage() {
@@ -298,13 +295,13 @@
         modalClose.addEventListener('click', closeModal);
     }
 
+    // Обработчики для скрытых кнопок (можно оставить)
     if (modalPrev) {
         modalPrev.addEventListener('click', (e) => {
             e.stopPropagation();
             prevModalImage();
         });
     }
-
     if (modalNext) {
         modalNext.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -312,21 +309,19 @@
         });
     }
 
-    // Закрытие по клику вне изображения (на фон)
     modal.addEventListener('click', (e) => {
         if (e.target === modal) {
             closeModal();
         }
     });
 
-    // Закрытие по клавише ESC
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && modal.classList.contains('show')) {
             closeModal();
         }
     });
 
-    // Запускаем инициализацию слайдеров после загрузки DOM
+    // Запуск слайдеров
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initProductSliders);
     } else {

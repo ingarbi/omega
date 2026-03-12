@@ -180,7 +180,6 @@ h3 {
 }
 /* Мобильные стили для навигации */
 @media (max-width: 992px) {
-    /* В tablet-версии меню пока остаётся горизонтальным */
     .nav ul {
         gap: 15px;
         flex-wrap: wrap;
@@ -230,7 +229,6 @@ h3 {
         padding: 10px 0;
         font-size: 1.2rem;
     }
-    /* Открытое меню */
     .header.menu-open .nav {
         transform: translateY(0);
         opacity: 1;
@@ -417,32 +415,43 @@ h3 {
     opacity: 1;
     position: relative;
 }
+
+/* Стрелки: появляются при наведении на слайдер */
 .slider-prev,
 .slider-next {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: 36px;
-    height: 36px;
-    background: rgba(255,255,255,0.9);
-    border: none;
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 1.3rem;
     color: #0056a7;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    transition: all 0.2s;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
     z-index: 10;
-    opacity: 0.7;
+    opacity: 0;                /* скрыты по умолчанию */
+    pointer-events: none;      /* не перехватывают клики */
+}
+.product-slider:hover .slider-prev,
+.product-slider:hover .slider-next {
+    opacity: 0.9;
+    pointer-events: auto;
 }
 .slider-prev:hover,
 .slider-next:hover {
-    opacity: 1;
-    background: white;
-    transform: translateY(-50%) scale(1.1);
+    background: rgba(255, 255, 255, 0.95);
+    border-color: #0056a7;
+    transform: translateY(-50%) scale(1.15);
+    box-shadow: 0 8px 25px rgba(0, 86, 167, 0.4);
+    color: #003d7a;
 }
 .slider-prev {
     left: 10px;
@@ -450,16 +459,30 @@ h3 {
 .slider-next {
     right: 10px;
 }
-@media (max-width: 600px) {
-    .slider-prev,
-    .slider-next {
-        width: 30px;
-        height: 30px;
-        font-size: 0.8rem;
-    }
+
+/* Точки вне слайдера – всегда видны */
+.slider-dots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+    padding: 5px 0;
+}
+.slider-dots .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #a0aec0;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s;
+}
+.slider-dots .dot.active {
+    background-color: #0056a7;
+    transform: scale(1.4);
 }
 
-/* Форма запроса внутри раздела продукции */
+/* Форма запроса */
 .request-form {
     background: white;
     padding: 40px;
@@ -604,7 +627,7 @@ h3 {
     }
 }
 
-/* Футер — доработанные отступы */
+/* Футер */
 .footer {
     background: linear-gradient(135deg, #1e1e2f 0%, #1a2a3a 100%);
     color: #cbd5e0;
@@ -685,15 +708,13 @@ h3 {
     color: white;
 }
 
-
-
-/* Мобильная версия подвала: навигация по центру, контакты скрыты, красивые отступы */
+/* Мобильная версия подвала – навигация в одну строку */
 @media (max-width: 768px) {
     .footer {
-        padding: 20px 0 20px;          /* Вертикальные отступы внутри подвала */
+        padding: 20px 0 20px;
     }
     .footer .container {
-        gap: 80px;                      /* Расстояние между навигацией и копирайтом (не меняем) */
+        gap: 80px;
     }
     .footer-top {
         gap: 0;
@@ -701,45 +722,51 @@ h3 {
         padding: 0;
     }
     .footer-contacts {
-        display: none;                  /* Контакты скрыты */
+        display: none;
     }
     .footer-nav {
-        margin: 0;                      /* Убираем внешние отступы, чтобы не создавать лишнего пространства */
-        padding: 0;                      /* Внутренние отступы тоже убираем — их добавим к ссылкам */
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        align-items: center;
     }
     .footer-nav .nav-list {
         display: flex;
         flex-direction: row;
-        justify-content: center;         /* Центрируем ссылки по горизонтали */
-        flex-wrap: wrap;
-        gap: 16px;                       /* Расстояние между ссылками (увеличено для воздуха) */
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        gap: 12px;
         margin: 0;
-        padding: 0;
+        padding: 0 10px;
         list-style: none;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
     }
     .footer-nav .nav-list li {
         margin: 0;
         padding: 0;
+        flex-shrink: 0;
     }
     .footer-nav .nav-list a {
-        font-size: 1rem;                 /* Чуть крупнее для комфорта */
+        font-size: 1rem;
         line-height: 1.4;
         margin: 0;
-        padding: 8px 12px;                /* Внутренние отступы у ссылок — создают «кнопки» и улучшают кликабельность */
+        padding: 8px 12px;
         white-space: nowrap;
-        color: #cbd5e0;                   /* Сохраняем цвет из общих стилей */
+        color: #cbd5e0;
         text-decoration: none;
         transition: background 0.2s, color 0.2s;
-        border-radius: 4px;                /* Лёгкое скругление для красоты */
+        border-radius: 4px;
     }
     .footer-nav .nav-list a:hover {
-        background: rgba(255, 255, 255, 0.1); /* Лёгкая подсветка при наведении */
+        background: rgba(255, 255, 255, 0.1);
         color: white;
     }
     .footer-bottom {
-        padding: 0;                        /* Убираем лишние отступы, оставляем только то, что нужно */
+        padding: 0;
         margin: 0;
-        font-size: 0.85rem;                /* Увеличил шрифт для читаемости */
+        font-size: 0.85rem;
         line-height: 1.4;
         border-top: 1px solid rgba(203, 213, 224, 0.2);
         text-align: center;
@@ -747,7 +774,7 @@ h3 {
     }
     .footer-bottom p {
         margin: 0;
-        padding: 4px 0 0;                  /* Небольшой отступ сверху, чтобы текст не прилипал к линии */
+        padding: 4px 0 0;
     }
     .footer-bottom a {
         color: #8a9bb5;
@@ -761,26 +788,27 @@ h3 {
 
 @media (max-width: 576px) {
     .footer {
-        padding: 15px 0 15px;            /* Чуть уменьшил отступы на узких экранах */
+        padding: 15px 0 15px;
     }
     .footer .container {
-        gap: 80px;                        /* Сохраняем то же расстояние */
+        gap: 80px;
     }
     .footer-nav .nav-list {
-        gap: 12px;                         /* Уменьшаем расстояние между ссылками */
+        gap: 8px;
     }
     .footer-nav .nav-list a {
         font-size: 0.9rem;
-        padding: 6px 10px;                 /* Немного уменьшаем отступы */
+        padding: 6px 8px;
     }
     .footer-bottom {
         font-size: 0.75rem;
     }
     .footer-bottom p {
-        padding-top: 2px;                  /* Ещё меньше отступ */
+        padding-top: 2px;
     }
 }
-/* Анимация появления (fade-up) */
+
+/* Анимация появления */
 .fade-up {
     opacity: 0;
     transform: translateY(20px);
@@ -791,25 +819,21 @@ h3 {
     transform: translateY(0);
 }
 
-/* ===== АНИМАЦИЯ ВРАЩЕНИЯ ДЛЯ ВЕНТИЛЯТОРОВ ===== */
+/* Вращение вентиляторов */
 @keyframes spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
 }
-
-/* Постоянное вращение для всех иконок вентилятора */
 .product-card .fa-fan,
 .hero-image .fa-fan,
 .fa-fan {
     animation: spin 3s linear infinite;
 }
-
-/* ===== УВЕЛИЧЕНИЕ РАЗМЕРА ВЕНТИЛЯТОРА В ГЛАВНОМ ЭКРАНЕ ===== */
 .hero-image .fa-fan {
     font-size: 21.28rem;
 }
 
-/* ===== МОДАЛЬНОЕ ОКНО (LIGHTBOX) ===== */
+/* Модальное окно */
 .modal {
     display: none;
     position: fixed;
@@ -856,110 +880,17 @@ h3 {
     border-radius: 8px;
     box-shadow: 0 5px 25px rgba(0,0,0,0.5);
 }
+/* Стрелки модалки скрыты */
 .modal-prev,
 .modal-next {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 50px;
-    height: 50px;
-    background: rgba(255,255,255,0.2);
-    border: none;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 1.5rem;
-    color: white;
-    transition: all 0.3s;
-    z-index: 1020;
-    backdrop-filter: blur(5px);
-}
-.modal-prev:hover,
-.modal-next:hover {
-    background: rgba(255,255,255,0.4);
-    color: #0056a7;
-    transform: translateY(-50%) scale(1.1);
-}
-.modal-prev {
-    left: 20px;
-}
-.modal-next {
-    right: 20px;
-}
-@media (max-width: 768px) {
-    .modal-prev,
-    .modal-next {
-        width: 40px;
-        height: 40px;
-        font-size: 1.2rem;
-    }
-    .modal-close {
-        top: -35px;
-        font-size: 35px;
-    }
+    display: none;
 }
 
-/* ===== ДОПОЛНИТЕЛЬНАЯ АДАПТАЦИЯ ДЛЯ ОЧЕНЬ МАЛЕНЬКИХ ЭКРАНОВ ===== */
-@media (max-width: 576px) {
-    .section {
-        padding: 50px 0;
-    }
-    h1 {
-        font-size: 1.8rem;
-    }
-    h2 {
-        font-size: 1.6rem;
-        margin-bottom: 30px;
-    }
-    h2:after {
-        width: 50px;
-    }
-    .logo {
-        font-size: 1.8rem;
-    }
-    .logo span {
-        font-size: 2rem;
-    }
-    .hero {
-        padding: 40px 0;
-    }
-    .hero-content p {
-        font-size: 1rem;
-    }
-    .hero-buttons .btn {
-        width: 100%;
-        text-align: center;
-    }
-    .product-card {
-        padding: 15px;
-    }
-    .product-card h3 {
-        font-size: 1.2rem;
-    }
-    .request-form {
-        padding: 25px 20px;
-    }
-    .form-group input,
-    .form-group textarea {
-        padding: 12px 16px;
-    }
-    .channel-selector {
-        gap: 15px;
-        justify-content: center;
-    }
-    .contact-info,
-    .social-card {
-        padding: 25px 20px;
-    }
-    .contact-item {
-        font-size: 0.95rem;
-    }
-    .social-icons a {
-        width: 50px;
-        height: 50px;
-        font-size: 1.6rem;
+/* На мобильных скрываем стрелки слайдера */
+@media (max-width: 768px) {
+    .slider-prev,
+    .slider-next {
+        display: none;
     }
 }
 
@@ -967,44 +898,5 @@ h3 {
 @media (min-width: 769px) {
     .social-card {
         padding-top: 20px;
-    }
-}
-/* Точки слайдера */
-.slider-dots {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    margin-top: 10px;
-    padding: 5px 0;
-}
-.slider-dots .dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background-color: #cbd5e0;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s;
-}
-.slider-dots .dot.active {
-    background-color: #0056a7;
-    transform: scale(1.3);
-}
-
-/* На мобильных скрываем стрелки и показываем точки */
-@media (max-width: 768px) {
-    .product-slider .slider-prev,
-    .product-slider .slider-next {
-        display: none;
-    }
-    .slider-dots {
-        display: flex; /* убедимся, что они видны */
-    }
-}
-
-/* На десктопе точки тоже можно оставить, но по желанию можно скрыть */
-@media (min-width: 769px) {
-    .slider-dots {
-        display: flex; /* оставляем, они не мешают */
     }
 }
