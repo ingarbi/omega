@@ -147,37 +147,89 @@
         });
     }
 
-    // *** СЛАЙДЕРЫ ДЛЯ КАРТОЧЕК ТОВАРОВ ***
+    // *** СЛАЙДЕРЫ ДЛЯ КАРТОЧЕК ТОВАРОВ С ТОЧКАМИ И СВАЙПАМИ ***
     function initProductSliders() {
         const productCards = document.querySelectorAll('.product-card');
         productCards.forEach(card => {
-            const sliderImages = card.querySelectorAll('.slider-image');
+            const slider = card.querySelector('.product-slider');
+            const sliderImages = slider.querySelectorAll('.slider-image');
             const prevBtn = card.querySelector('.slider-prev');
             const nextBtn = card.querySelector('.slider-next');
-            if (!sliderImages.length || !prevBtn || !nextBtn) return;
+            const dotsContainer = slider.querySelector('.slider-dots');
+            if (!sliderImages.length) return;
 
             let currentIndex = 0;
             const totalImages = sliderImages.length;
+
+            // Создаём точки
+            dotsContainer.innerHTML = '';
+            for (let i = 0; i < totalImages; i++) {
+                const dot = document.createElement('span');
+                dot.classList.add('dot');
+                dot.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    goToSlide(i);
+                });
+                dotsContainer.appendChild(dot);
+            }
+            const dots = dotsContainer.querySelectorAll('.dot');
+
+            function updateDots() {
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === currentIndex);
+                });
+            }
 
             function showImage(index) {
                 sliderImages.forEach((img, i) => {
                     img.classList.toggle('active', i === index);
                 });
+                updateDots();
             }
 
-            prevBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                currentIndex = (currentIndex - 1 + totalImages) % totalImages;
+            function goToSlide(index) {
+                if (index < 0) index = totalImages - 1;
+                if (index >= totalImages) index = 0;
+                currentIndex = index;
                 showImage(currentIndex);
-            });
+            }
 
-            nextBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                currentIndex = (currentIndex + 1) % totalImages;
-                showImage(currentIndex);
-            });
+            // Кнопки "предыдущий/следующий"
+            if (prevBtn && nextBtn) {
+                prevBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    goToSlide(currentIndex - 1);
+                });
+                nextBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    goToSlide(currentIndex + 1);
+                });
+            }
+
+            // Обработка свайпов
+            let touchStartX = 0;
+            let touchEndX = 0;
+            const minSwipeDistance = 50; // минимальное расстояние для свайпа
+
+            slider.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+
+            slider.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                const distance = touchEndX - touchStartX;
+                if (Math.abs(distance) > minSwipeDistance) {
+                    if (distance > 0) {
+                        // свайп вправо → предыдущее
+                        goToSlide(currentIndex - 1);
+                    } else {
+                        // свайп влево → следующее
+                        goToSlide(currentIndex + 1);
+                    }
+                }
+            }, { passive: true });
 
             // Открытие модального окна при клике на изображение
             sliderImages.forEach((img, index) => {
@@ -187,6 +239,9 @@
                     openModal(card, index);
                 });
             });
+
+            // Инициализация
+            showImage(currentIndex);
         });
     }
 
