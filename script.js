@@ -385,17 +385,21 @@
         // Обработчики кнопок
         if (prevBtn) {
             prevBtn.addEventListener('click', () => {
-                if (currentActiveIndex > 0) {
-                    centerActiveIndex(currentActiveIndex - 1, true);
-                }
+            if (currentActiveIndex > 0) {
+                const newIndex = currentActiveIndex - 1;
+                setActiveIndex(newIndex);          // 🔥 ADD THIS
+                centerActiveIndex(newIndex, true);
+            }
             });
         }
 
         if (nextBtn) {
             nextBtn.addEventListener('click', () => {
-                if (currentActiveIndex < track.children.length - 1) {
-                    centerActiveIndex(currentActiveIndex + 1, true);
-                }
+            if (currentActiveIndex < track.children.length - 1) {
+                const newIndex = currentActiveIndex + 1;
+                setActiveIndex(newIndex);      
+                centerActiveIndex(newIndex, true);
+            }
             });
         }
 
