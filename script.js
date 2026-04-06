@@ -163,7 +163,7 @@
         nav.addEventListener('click', (e) => e.stopPropagation());
     }
 
-    // --- ПОЛНЫЙ МАССИВ ВСЕХ ИЗОБРАЖЕНИЙ (ваш полный массив) ---
+    // --- ПОЛНЫЙ МАССИВ ВСЕХ ИЗОБРАЖЕНИЙ (глобальный) ---
     const allImages = [
         // Гибкие воздуховоды
         { src: 'images/Гибкие воздуховоды/IMG_4532.JPG', category: 'Гибкие воздуховоды', description: 'Для больших предприятий, где требуется воздухоотвод из системы вентиляции.' },
@@ -246,7 +246,7 @@
         { src: 'images/Решетки и диффузоры/IMG_4618.PNG', category: 'Решетки и диффузоры', description: 'Вентиляционные фаски и детали для создания различных форм вентиляционных систем.' }
     ];
 
-    // --- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ КАРУСЕЛИ ---
+    // --- Функции для работы карусели (общие) ---
     function waitForImages(track) {
         const images = Array.from(track.querySelectorAll('img'));
         const promises = images.map(img => {
@@ -259,35 +259,28 @@
         return Promise.all(promises);
     }
 
-    // Ручная плавная прокрутка для карусели (без конфликта с snap)
     let activeCarouselAnim = null;
     function smoothScrollCarousel(container, targetLeft, duration = 500) {
         if (activeCarouselAnim) {
             cancelAnimationFrame(activeCarouselAnim);
             activeCarouselAnim = null;
         }
-
         const startLeft = container.scrollLeft;
         const distance = targetLeft - startLeft;
         if (Math.abs(distance) < 1) return;
-
-        // Отключаем snap на время анимации
         const originalSnapType = container.style.scrollSnapType;
         const originalWebkitSnapType = container.style.webkitScrollSnapType;
         container.style.scrollSnapType = 'none';
         container.style.webkitScrollSnapType = 'none';
-
         const startTime = performance.now();
         function step(currentTime) {
             const elapsed = currentTime - startTime;
             const progress = Math.min(elapsed / duration, 1);
-            const easeProgress = 1 - Math.pow(1 - progress, 4); // ease-out quart
+            const easeProgress = 1 - Math.pow(1 - progress, 4);
             container.scrollLeft = startLeft + distance * easeProgress;
-
             if (elapsed < duration) {
                 activeCarouselAnim = requestAnimationFrame(step);
             } else {
-                // Восстанавливаем snap
                 container.style.scrollSnapType = originalSnapType;
                 container.style.webkitScrollSnapType = originalWebkitSnapType;
                 activeCarouselAnim = null;
@@ -309,30 +302,27 @@
         return Math.max(0, target);
     }
 
-    // --- ИНИЦИАЛИЗАЦИЯ КАРУСЕЛИ ---
-    function initProductCarousel() {
-        const container = document.getElementById('carouselContainer');
-        const track = document.getElementById('carouselTrack');
-        const prevBtn = document.querySelector('.carousel-arrow-prev');
-        const nextBtn = document.querySelector('.carousel-arrow-next');
-        const resetBtn = document.getElementById('carouselReset');
-        const moreBtn = document.getElementById('carouselMore');
+    // --- Инициализация одной карусели по ID элементов и массиву изображений (с глобальными индексами) ---
+    function initCarousel(containerId, trackId, imagesArray, prevBtnId, nextBtnId, resetBtnId, moreBtnId = null) {
+        const container = document.getElementById(containerId);
+        const track = document.getElementById(trackId);
+        const prevBtn = document.getElementById(prevBtnId);
+        const nextBtn = document.getElementById(nextBtnId);
+        const resetBtn = document.getElementById(resetBtnId);
+        const moreBtn = moreBtnId ? document.getElementById(moreBtnId) : null;
 
         if (!container || !track) {
-            console.error('Карусель: контейнер или трек не найдены');
+            console.error(`Карусель ${containerId} не найдена`);
             return;
         }
 
-        // Заполняем трек изображениями
+        // Заполняем трек
         track.innerHTML = '';
-        allImages.forEach((item, index) => {
+        imagesArray.forEach((item, idx) => {
             const carouselItem = document.createElement('div');
             carouselItem.className = 'carousel-item';
-            carouselItem.innerHTML = `
-                <img src="${item.src}" alt="${item.category}" loading="lazy">
-                <div class="item-title">${item.category}</div>
-            `;
-            carouselItem.dataset.index = index;
+            carouselItem.innerHTML = `<img src="${item.src}" alt="${item.category}" loading="lazy">`;
+            carouselItem.dataset.index = item.globalIndex;  // сохраняем глобальный индекс для модалки
             carouselItem.dataset.category = item.category;
             carouselItem.dataset.description = item.description;
             track.appendChild(carouselItem);
@@ -345,11 +335,9 @@
             if (index < 0) index = 0;
             if (index >= items.length) index = items.length - 1;
             if (index === currentActiveIndex) return;
-
             items[currentActiveIndex]?.classList.remove('active');
             items[index].classList.add('active');
             currentActiveIndex = index;
-
             if (prevBtn) prevBtn.disabled = currentActiveIndex === 0;
             if (nextBtn) nextBtn.disabled = currentActiveIndex === items.length - 1;
             if (resetBtn) resetBtn.classList.toggle('visible', currentActiveIndex > 0);
@@ -359,13 +347,10 @@
             const items = track.children;
             if (index < 0) index = 0;
             if (index >= items.length) index = items.length - 1;
-
             const targetScroll = getTargetScrollForIndex(container, track, index);
-            
             if (smooth) {
                 smoothScrollCarousel(container, targetScroll, 500);
             } else {
-                // Принудительно отключаем snap на момент установки позиции
                 const originalSnapType = container.style.scrollSnapType;
                 container.style.scrollSnapType = 'none';
                 container.scrollLeft = targetScroll;
@@ -373,7 +358,6 @@
             }
         }
 
-        // Ждём загрузки изображений и ставим начальную позицию
         waitForImages(track).then(() => {
             const originalSnapType = container.style.scrollSnapType;
             container.style.scrollSnapType = 'none';
@@ -382,40 +366,35 @@
             container.style.scrollSnapType = originalSnapType || 'x proximity';
         });
 
-        // Обработчики кнопок
         if (prevBtn) {
             prevBtn.addEventListener('click', () => {
-            if (currentActiveIndex > 0) {
-                const newIndex = currentActiveIndex - 1;
-                setActiveIndex(newIndex);          // 🔥 ADD THIS
-                centerActiveIndex(newIndex, true);
-            }
+                if (currentActiveIndex > 0) {
+                    const newIndex = currentActiveIndex - 1;
+                    setActiveIndex(newIndex);
+                    centerActiveIndex(newIndex, true);
+                }
             });
         }
-
         if (nextBtn) {
             nextBtn.addEventListener('click', () => {
-            if (currentActiveIndex < track.children.length - 1) {
-                const newIndex = currentActiveIndex + 1;
-                setActiveIndex(newIndex);      
-                centerActiveIndex(newIndex, true);
-            }
+                if (currentActiveIndex < track.children.length - 1) {
+                    const newIndex = currentActiveIndex + 1;
+                    setActiveIndex(newIndex);
+                    centerActiveIndex(newIndex, true);
+                }
             });
         }
-
         if (resetBtn) {
             resetBtn.addEventListener('click', () => {
                 centerActiveIndex(0, true);
             });
         }
-
         if (moreBtn) {
             moreBtn.addEventListener('click', () => {
                 smoothScrollToTarget('#request-form', SCROLL_DURATION);
             });
         }
 
-        // Обновление активного индекса при ручной прокрутке
         container.addEventListener('scroll', () => {
             const containerCenter = container.scrollLeft + container.clientWidth / 2;
             let bestIndex = 0;
@@ -436,16 +415,35 @@
             }
         });
 
-        // Открытие модалки по клику на карточку
+        // Клик для открытия модалки
         track.addEventListener('click', (e) => {
             const item = e.target.closest('.carousel-item');
             if (!item) return;
-            const index = parseInt(item.dataset.index, 10);
-            openModal(index);
+            const globalIndex = parseInt(item.dataset.index, 10);
+            openModal(globalIndex);
         });
     }
 
-    // --- МОДАЛЬНОЕ ОКНО ---
+    // --- Подготовка данных для каждой категории (с глобальными индексами) ---
+    const categoryImages = {
+        'Гибкие воздуховоды': [],
+        'Оцинкованные воздуховоды': [],
+        'ПВХ воздуховоды': [],
+        'Решетки и диффузоры': []
+    };
+    allImages.forEach((img, globalIdx) => {
+        const cat = img.category;
+        if (categoryImages[cat]) {
+            categoryImages[cat].push({
+                src: img.src,
+                category: img.category,
+                description: img.description,
+                globalIndex: globalIdx
+            });
+        }
+    });
+
+    // --- МОДАЛЬНОЕ ОКНО (работает с глобальным массивом allImages) ---
     const modal = document.getElementById('imageModal');
     const modalImage = document.getElementById('modalImage');
     const modalClose = document.querySelector('.modal-close');
@@ -491,39 +489,27 @@
             }
         });
     }
+    if (modalClose) modalClose.addEventListener('click', closeModal);
+    if (modalPrev) modalPrev.addEventListener('click', (e) => { e.stopPropagation(); prevModalImage(); });
+    if (modalNext) modalNext.addEventListener('click', (e) => { e.stopPropagation(); nextModalImage(); });
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.classList.contains('show')) closeModal(); });
 
-    if (modalClose) {
-        modalClose.addEventListener('click', closeModal);
+    // --- Запуск всех каруселей после загрузки страницы ---
+    function initAllCarousels() {
+        // Гибкие воздуховоды (без кнопки more)
+        initCarousel('carouselFlex', 'trackFlex', categoryImages['Гибкие воздуховоды'], 'prevFlex', 'nextFlex', 'resetFlex');
+        // Оцинкованные (без кнопки more)
+        initCarousel('carouselGalvanized', 'trackGalvanized', categoryImages['Оцинкованные воздуховоды'], 'prevGalvanized', 'nextGalvanized', 'resetGalvanized');
+        // ПВХ (без кнопки more)
+        initCarousel('carouselPVC', 'trackPVC', categoryImages['ПВХ воздуховоды'], 'prevPVC', 'nextPVC', 'resetPVC');
+        // Решетки и диффузоры (с кнопкой more)
+        initCarousel('carouselGrilles', 'trackGrilles', categoryImages['Решетки и диффузоры'], 'prevGrilles', 'nextGrilles', 'resetGrilles', 'moreGrilles');
     }
-    if (modalPrev) {
-        modalPrev.addEventListener('click', (e) => {
-            e.stopPropagation();
-            prevModalImage();
-        });
-    }
-    if (modalNext) {
-        modalNext.addEventListener('click', (e) => {
-            e.stopPropagation();
-            nextModalImage();
-        });
-    }
 
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            closeModal();
-        }
-    });
-
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.classList.contains('show')) {
-            closeModal();
-        }
-    });
-
-    // Запуск карусели после загрузки страницы
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initProductCarousel);
+        document.addEventListener('DOMContentLoaded', initAllCarousels);
     } else {
-        initProductCarousel();
+        initAllCarousels();
     }
 })();

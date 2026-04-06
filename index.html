@@ -54,23 +54,77 @@
         </div>
     </section>
 
-    <!-- КАРУСЕЛЬ ПРОДУКЦИИ -->
+    <!-- 4 КАРУСЕЛИ ПО КАТЕГОРИЯМ С КНОПКАМИ В ВЕРХНЕЙ СТРОКЕ -->
     <section class="section section-light" id="products">
         <div class="container">
             <h2 class="fade-up">Продукция</h2>
 
-            <div class="carousel-section">
-                <div class="carousel-container" id="carouselContainer">
-                    <div class="carousel-track" id="carouselTrack">
-                        <!-- Элементы будут сгенерированы скриптом -->
+            <!-- Категория 1: Гибкие воздуховоды (без кнопки "Полный каталог") -->
+            <div class="product-category fade-up">
+                <div class="category-header">
+                    <h3>Гибкие воздуховоды</h3>
+                    <div class="carousel-controls">
+                        <button class="carousel-arrow carousel-arrow-prev" id="prevFlex" aria-label="Предыдущие"><i class="fas fa-chevron-left"></i></button>
+                        <button class="carousel-arrow carousel-arrow-next" id="nextFlex" aria-label="Следующие"><i class="fas fa-chevron-right"></i></button>
+                        <button class="carousel-reset" id="resetFlex" aria-label="В начало"><i class="fas fa-undo-alt"></i></button>
                     </div>
                 </div>
-                <!-- Панель управления -->
-                <div class="carousel-controls">
-                    <button class="carousel-arrow carousel-arrow-prev" aria-label="Предыдущие"><i class="fas fa-chevron-left"></i></button>
-                    <button class="carousel-arrow carousel-arrow-next" aria-label="Следующие"><i class="fas fa-chevron-right"></i></button>
-                    <button class="carousel-reset" id="carouselReset" aria-label="В начало"><i class="fas fa-undo-alt"></i></button>
-                    <button class="carousel-more" id="carouselMore" aria-label="Полный каталог">Полный каталог <i class="fas fa-arrow-right"></i></button>
+                <div class="carousel-section">
+                    <div class="carousel-container" id="carouselFlex">
+                        <div class="carousel-track" id="trackFlex"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Категория 2: Оцинкованные воздуховоды (без кнопки "Полный каталог") -->
+            <div class="product-category fade-up">
+                <div class="category-header">
+                    <h3>Оцинкованные воздуховоды</h3>
+                    <div class="carousel-controls">
+                        <button class="carousel-arrow carousel-arrow-prev" id="prevGalvanized" aria-label="Предыдущие"><i class="fas fa-chevron-left"></i></button>
+                        <button class="carousel-arrow carousel-arrow-next" id="nextGalvanized" aria-label="Следующие"><i class="fas fa-chevron-right"></i></button>
+                        <button class="carousel-reset" id="resetGalvanized" aria-label="В начало"><i class="fas fa-undo-alt"></i></button>
+                    </div>
+                </div>
+                <div class="carousel-section">
+                    <div class="carousel-container" id="carouselGalvanized">
+                        <div class="carousel-track" id="trackGalvanized"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Категория 3: ПВХ воздуховоды (без кнопки "Полный каталог") -->
+            <div class="product-category fade-up">
+                <div class="category-header">
+                    <h3>ПВХ воздуховоды</h3>
+                    <div class="carousel-controls">
+                        <button class="carousel-arrow carousel-arrow-prev" id="prevPVC" aria-label="Предыдущие"><i class="fas fa-chevron-left"></i></button>
+                        <button class="carousel-arrow carousel-arrow-next" id="nextPVC" aria-label="Следующие"><i class="fas fa-chevron-right"></i></button>
+                        <button class="carousel-reset" id="resetPVC" aria-label="В начало"><i class="fas fa-undo-alt"></i></button>
+                    </div>
+                </div>
+                <div class="carousel-section">
+                    <div class="carousel-container" id="carouselPVC">
+                        <div class="carousel-track" id="trackPVC"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Категория 4: Решетки и диффузоры (с кнопкой "Весь ассортимент") -->
+            <div class="product-category fade-up">
+                <div class="category-header">
+                    <h3>Решетки и диффузоры</h3>
+                    <div class="carousel-controls">
+                        <button class="carousel-arrow carousel-arrow-prev" id="prevGrilles" aria-label="Предыдущие"><i class="fas fa-chevron-left"></i></button>
+                        <button class="carousel-arrow carousel-arrow-next" id="nextGrilles" aria-label="Следующие"><i class="fas fa-chevron-right"></i></button>
+                        <button class="carousel-reset" id="resetGrilles" aria-label="В начало"><i class="fas fa-undo-alt"></i></button>
+                        <button class="carousel-more" id="moreGrilles" aria-label="Полный каталог">Весь ассортимент<i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+                <div class="carousel-section">
+                    <div class="carousel-container" id="carouselGrilles">
+                        <div class="carousel-track" id="trackGrilles"></div>
+                    </div>
                 </div>
             </div>
 
