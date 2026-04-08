@@ -534,26 +534,88 @@ h3 {
     border-color: #0056a7;
     box-shadow: 0 0 0 4px rgba(0,86,167,0.1);
 }
+
+/* --- СТИЛЬНЫЙ ВЫБОР КАНАЛА (WhatsApp / Telegram) --- */
 .channel-selector {
     display: flex;
-    gap: 25px;
-    margin-bottom: 25px;
-    flex-wrap: wrap;
+    gap: 20px;
     justify-content: center;
+    margin-bottom: 25px;
+    flex-wrap: nowrap;
 }
-.channel-selector label {
+.channel-option {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-weight: 500;
+    gap: 12px;
+    padding: 12px 28px;
+    border-radius: 60px;
+    border: 2px solid #e2e8f0;
+    background: white;
     cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
-.channel-selector input[type="radio"] {
-    accent-color: #0056a7;
-    width: 18px;
-    height: 18px;
-    margin: 0;
+.channel-option:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(0,86,167,0.15);
+    border-color: #b9d4f0;
 }
+.channel-option:has(input:checked) {
+    border-color: #0056a7;
+    background: #eef4ff;
+    box-shadow: 0 6px 14px rgba(0,86,167,0.2);
+}
+.channel-option input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+.channel-option i {
+    font-size: 1.6rem;
+    transition: transform 0.2s;
+}
+.channel-option:has(input:checked) i {
+    transform: scale(1.05);
+}
+.channel-option span {
+    font-weight: 600;
+    font-size: 1rem;
+    color: #1e1e2f;
+}
+.channel-option:has(input:checked) span {
+    color: #0056a7;
+}
+/* Цвета иконок */
+.channel-option:first-child i {
+    color: #25D366;
+}
+.channel-option:last-child i {
+    color: #26A5E4;
+}
+
+@media (max-width: 768px) {
+    .channel-selector {
+        gap: 12px;
+    }
+    .channel-option {
+        padding: 10px 18px;
+        gap: 8px;
+    }
+    .channel-option i {
+        font-size: 1.3rem;
+    }
+    .channel-option span {
+        font-size: 0.9rem;
+    }
+}
+@media (max-width: 480px) {
+    .channel-option {
+        padding: 8px 14px;
+    }
+}
+
 /* --- КОНТАКТЫ --- */
 .contacts-grid {
     display: grid;
@@ -629,6 +691,10 @@ h3 {
     color: white;
     font-size: 2rem;
     transition: all 0.3s;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 8px;
+    text-decoration-color: white;
 }
 .social-icons a:hover {
     transform: scale(1.1);
@@ -945,8 +1011,8 @@ h3 {
         font-size: 30px;
     }
     .carousel-controls {
-    display: none;
-  }
+        display: none;
+    }
 }
 @media (min-width: 769px) {
     .social-card {
