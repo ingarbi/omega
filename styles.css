@@ -1047,7 +1047,11 @@ h3 {
 }
 
 @media (min-width: 350px) and (max-width: 404px) {
-    .cityAdress {
-        font-size: 15px;
-    }
+  .cityAdress {
+    font-size: 15px; /* Default was likely 16px */
+  }
+}
+
+section[id] {
+    scroll-margin-top: 100px;
 }
