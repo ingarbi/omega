@@ -985,3 +985,7 @@ h3 {
     font-size: 15px; /* Default was likely 16px */
   }
 }
+
+section[id] {
+    scroll-margin-top: 100px;
+}
