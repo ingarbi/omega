@@ -321,7 +321,7 @@ h3 {
     .advantages { grid-template-columns: 1fr; }
 }
 
-/* --- КАРУСЕЛЬ ПРОДУКЦИИ (кнопки в верхней строке) --- */
+/* --- КАРУСЕЛЬ ПРОДУКЦИИ --- */
 .product-category {
     margin-bottom: 50px;
 }
@@ -535,7 +535,7 @@ h3 {
     box-shadow: 0 0 0 4px rgba(0,86,167,0.1);
 }
 
-/* --- СТИЛЬНЫЙ ВЫБОР КАНАЛА (WhatsApp / Telegram) --- */
+/* --- СТИЛЬНЫЙ ВЫБОР КАНАЛА --- */
 .channel-selector {
     display: flex;
     gap: 20px;
@@ -587,7 +587,6 @@ h3 {
 .channel-option:has(input:checked) span {
     color: #0056a7;
 }
-/* Цвета иконок */
 .channel-option:first-child i {
     color: #25D366;
 }
@@ -1048,10 +1047,121 @@ h3 {
 
 @media (min-width: 350px) and (max-width: 404px) {
   .cityAdress {
-    font-size: 15px; /* Default was likely 16px */
+    font-size: 15px;
   }
 }
 
 section[id] {
     scroll-margin-top: 100px;
+}
+
+/* --- СТИЛИ ДЛЯ 152-ФЗ --- */
+
+.privacy-agreement {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 25px;
+    font-size: 0.95rem;
+    color: #2d3748;
+    line-height: 1.4;
+}
+
+.privacy-agreement input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    flex-shrink: 0;
+    accent-color: #0056a7;
+}
+
+.privacy-agreement label {
+    cursor: pointer;
+}
+
+.privacy-agreement a {
+    color: #0056a7;
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+.privacy-agreement a:hover {
+    color: #003d7a;
+}
+
+/* Модальное окно политики */
+.privacy-modal-content {
+    max-width: 800px;
+    width: 95%;
+    max-height: 85vh;
+    overflow-y: auto;
+    background: white;
+    border-radius: 16px;
+    padding: 40px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    position: relative;
+}
+
+.privacy-modal-content .modal-close {
+    top: 15px;
+    right: 15px;
+    color: #1e1e2f;
+    font-size: 24px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.05);
+    border-radius: 50%;
+    transition: 0.2s;
+}
+
+.privacy-modal-content .modal-close:hover {
+    background: rgba(0,0,0,0.1);
+    transform: rotate(90deg);
+}
+
+.privacy-body {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #2d3748;
+}
+
+.privacy-body h2 {
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+    color: #1e1e2f;
+    position: relative;
+}
+
+.privacy-body h2:after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 3px;
+    background: #0056a7;
+    margin-top: 10px;
+    border-radius: 2px;
+}
+
+.privacy-body p {
+    margin-bottom: 18px;
+}
+
+.privacy-body strong {
+    color: #1e1e2f;
+}
+
+@media (max-width: 768px) {
+    .privacy-modal-content {
+        padding: 25px 20px;
+        max-height: 90vh;
+    }
+    .privacy-body h2 {
+        font-size: 1.4rem;
+    }
+    .privacy-body {
+        font-size: 0.9rem;
+    }
 }

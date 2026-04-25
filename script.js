@@ -102,6 +102,13 @@
     if (form) {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
+            // Проверка согласия
+            const agreement = document.getElementById('privacy-agreement');
+            if (!agreement || !agreement.checked) {
+                alert('Для отправки заявки необходимо согласие на обработку персональных данных.');
+                return;
+            }
+
             const name = document.getElementById('name').value.trim();
             const phone = document.getElementById('phone').value.trim();
             const comment = document.getElementById('comment').value.trim();
@@ -294,7 +301,6 @@
         return Math.max(0, target);
     }
 
-    // --- Инициализация одной карусели по ID элементов и массиву изображений (с глобальными индексами) ---
     function initCarousel(containerId, trackId, imagesArray, prevBtnId, nextBtnId, resetBtnId, moreBtnId = null) {
         const container = document.getElementById(containerId);
         const track = document.getElementById(trackId);
@@ -308,13 +314,12 @@
             return;
         }
 
-        // Заполняем трек
         track.innerHTML = '';
         imagesArray.forEach((item, idx) => {
             const carouselItem = document.createElement('div');
             carouselItem.className = 'carousel-item';
             carouselItem.innerHTML = `<img src="${item.src}" alt="${item.category}" loading="lazy">`;
-            carouselItem.dataset.index = item.globalIndex;  // сохраняем глобальный индекс для модалки
+            carouselItem.dataset.index = item.globalIndex;
             carouselItem.dataset.category = item.category;
             carouselItem.dataset.description = item.description;
             track.appendChild(carouselItem);
@@ -407,7 +412,6 @@
             }
         });
 
-        // Клик для открытия модалки
         track.addEventListener('click', (e) => {
             const item = e.target.closest('.carousel-item');
             if (!item) return;
@@ -416,7 +420,6 @@
         });
     }
 
-    // --- Подготовка данных для каждой категории (с глобальными индексами) ---
     const categoryImages = {
         'Гибкие воздуховоды': [],
         'Оцинкованные воздуховоды': [],
@@ -435,7 +438,7 @@
         }
     });
 
-    // --- МОДАЛЬНОЕ ОКНО (работает с глобальным массивом allImages) ---
+    // --- МОДАЛЬНОЕ ОКНО ДЛЯ ИЗОБРАЖЕНИЙ ---
     const modal = document.getElementById('imageModal');
     const modalImage = document.getElementById('modalImage');
     const modalClose = document.querySelector('.modal-close');
@@ -487,15 +490,11 @@
     modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.classList.contains('show')) closeModal(); });
 
-    // --- Запуск всех каруселей после загрузки страницы ---
+    // --- ЗАПУСК КАРУСЕЛЕЙ ---
     function initAllCarousels() {
-        // Гибкие воздуховоды (без кнопки more)
         initCarousel('carouselFlex', 'trackFlex', categoryImages['Гибкие воздуховоды'], 'prevFlex', 'nextFlex', 'resetFlex');
-        // Оцинкованные (без кнопки more)
         initCarousel('carouselGalvanized', 'trackGalvanized', categoryImages['Оцинкованные воздуховоды'], 'prevGalvanized', 'nextGalvanized', 'resetGalvanized');
-        // ПВХ (без кнопки more)
         initCarousel('carouselPVC', 'trackPVC', categoryImages['ПВХ воздуховоды'], 'prevPVC', 'nextPVC', 'resetPVC');
-        // Решетки и диффузоры (с кнопкой more)
         initCarousel('carouselGrilles', 'trackGrilles', categoryImages['Решетки и диффузоры'], 'prevGrilles', 'nextGrilles', 'resetGrilles', 'moreGrilles');
     }
 
@@ -504,4 +503,84 @@
     } else {
         initAllCarousels();
     }
+
+    // --- БЛОК ДЛЯ 152-ФЗ: МОДАЛЬНОЕ ОКНО ПОЛИТИКИ КОНФИДЕНЦИАЛЬНОСТИ ---
+    const privacyModal = document.getElementById('privacyModal');
+    const privacyModalCloseBtn = document.getElementById('privacyModalClose');
+
+    function openPrivacyModal() {
+        if (privacyModal) {
+            privacyModal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function closePrivacyModal() {
+        if (privacyModal) {
+            privacyModal.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+    }
+
+    if (privacyModalCloseBtn) {
+        privacyModalCloseBtn.addEventListener('click', closePrivacyModal);
+    }
+
+    if (privacyModal) {
+        privacyModal.addEventListener('click', (e) => {
+            if (e.target === privacyModal) {
+                closePrivacyModal();
+            }
+        });
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && privacyModal && privacyModal.classList.contains('show')) {
+            closePrivacyModal();
+        }
+    });
+
 })();
+// --- РАБОТА ПОЛИТИКИ КОНФИДЕНЦИАЛЬНОСТИ (глобально) ---
+document.addEventListener('DOMContentLoaded', function() {
+    const privacyModal = document.getElementById('privacyModal');
+    if (!privacyModal) return;
+
+    // Функции открытия/закрытия
+    window.openPrivacyModal = function() {
+        privacyModal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    };
+    window.closePrivacyModal = function() {
+        privacyModal.classList.remove('show');
+        document.body.style.overflow = '';
+    };
+
+    // Назначаем обработчики на все ссылки с классом privacy-link
+    document.querySelectorAll('.privacy-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.openPrivacyModal();
+        });
+    });
+
+    // Крестик закрытия
+    const closeBtn = document.getElementById('privacyModalClose');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', window.closePrivacyModal);
+    }
+
+    // Клик вне окна
+    privacyModal.addEventListener('click', function(e) {
+        if (e.target === privacyModal) {
+            window.closePrivacyModal();
+        }
+    });
+
+    // Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && privacyModal.classList.contains('show')) {
+            window.closePrivacyModal();
+        }
+    });
+});
