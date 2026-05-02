@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://omegavent.ru/sitemap.xml

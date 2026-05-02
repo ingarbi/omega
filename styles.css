@@ -780,8 +780,8 @@ h3 {
 }
 .footer-bottom {
     text-align: center;
-    padding-top: 15px;
-    border-top: 1px solid rgba(203, 213, 224, 0.2);
+    padding-top: 5px;
+    padding-bottom: 20px;
     font-size: 0.9rem;
     color: #8a9bb5;
 }

@@ -5,7 +5,7 @@
 
     // --- Плавная прокрутка к якорю ---
     function smoothScrollToTarget(targetId, duration = SCROLL_DURATION) {
-        if (targetId === '#') return;
+        if (!targetId || targetId === '#') return;
         const targetElement = document.querySelector(targetId);
         if (!targetElement) return;
 
@@ -55,32 +55,36 @@
     const navLinks = document.querySelectorAll('.nav a[href^="#"]');
     const sections = document.querySelectorAll('section[id]');
     
-    function updateActiveMenu() {
-        let current = '';
-        sections.forEach(section => {
-            const sectionTop = section.offsetTop - 100;
-            const sectionHeight = section.clientHeight;
-            if (pageYOffset >= sectionTop && pageYOffset < sectionTop + sectionHeight) {
-                current = section.getAttribute('id');
-            }
-        });
-        if (!current && sections.length > 0) {
-            current = 'production';
+      function updateActiveMenu() {
+    const header = document.getElementById('header');
+    const headerHeight = header ? header.offsetHeight : 0;
+
+    let current = '';
+
+    sections.forEach(section => {
+        const rect = section.getBoundingClientRect();
+
+        // section top reached header
+        if (rect.top <= headerHeight + 50) {
+            current = section.getAttribute('id');
         }
-        navLinks.forEach(link => {
-            link.classList.remove('active');
-            const href = link.getAttribute('href').substring(1);
-            if (href === current) {
-                link.classList.add('active');
-            }
-        });
-        const header = document.getElementById('header');
-        if (window.scrollY > 50) {
-            header.classList.add('scrolled');
-        } else {
-            header.classList.remove('scrolled');
+    });
+
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        const href = link.getAttribute('href').substring(1);
+        if (href === current) {
+            link.classList.add('active');
         }
+    });
+
+    // header shadow logic
+    if (window.scrollY > 50) {
+        header.classList.add('scrolled');
+    } else {
+        header.classList.remove('scrolled');
     }
+}
 
     window.addEventListener('scroll', updateActiveMenu);
     window.addEventListener('load', updateActiveMenu);
@@ -102,7 +106,6 @@
     if (form) {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
-            // Проверка согласия
             const agreement = document.getElementById('privacy-agreement');
             if (!agreement || !agreement.checked) {
                 alert('Для отправки заявки необходимо согласие на обработку персональных данных.');
@@ -301,6 +304,18 @@
         return Math.max(0, target);
     }
 
+    // Вспомогательная функция для создания осмысленного alt
+    function getImageAlt(item) {
+        // item: { category, description, ... }
+        if (item.description && item.description.trim() !== '') {
+            // Берём первую фразу, обрезаем до 80 символов
+            let shortDesc = item.description.split('.')[0];
+            if (shortDesc.length > 80) shortDesc = shortDesc.slice(0, 80) + '…';
+            return `${item.category}: ${shortDesc}`;
+        }
+        return `${item.category} от OMEGA`;
+    }
+
     function initCarousel(containerId, trackId, imagesArray, prevBtnId, nextBtnId, resetBtnId, moreBtnId = null) {
         const container = document.getElementById(containerId);
         const track = document.getElementById(trackId);
@@ -318,7 +333,9 @@
         imagesArray.forEach((item, idx) => {
             const carouselItem = document.createElement('div');
             carouselItem.className = 'carousel-item';
-            carouselItem.innerHTML = `<img src="${item.src}" alt="${item.category}" loading="lazy">`;
+            const altText = getImageAlt(item);
+            // Добавляем loading="lazy" для экономии трафика и улучшения SEO
+            carouselItem.innerHTML = `<img src="${item.src}" alt="${altText}" loading="lazy">`;
             carouselItem.dataset.index = item.globalIndex;
             carouselItem.dataset.category = item.category;
             carouselItem.dataset.description = item.description;
@@ -450,7 +467,10 @@
     function openModal(index) {
         if (!allImages.length) return;
         currentModalIndex = index;
-        modalImage.src = allImages[currentModalIndex].src;
+        const imgData = allImages[currentModalIndex];
+        modalImage.src = imgData.src;
+        // Добавляем alt для модального окна (важно для SEO и доступности)
+        modalImage.alt = getImageAlt(imgData);
         modal.classList.add('show');
         document.body.style.overflow = 'hidden';
     }
@@ -463,13 +483,17 @@
     function prevModalImage() {
         if (!allImages.length) return;
         currentModalIndex = (currentModalIndex - 1 + allImages.length) % allImages.length;
-        modalImage.src = allImages[currentModalIndex].src;
+        const imgData = allImages[currentModalIndex];
+        modalImage.src = imgData.src;
+        modalImage.alt = getImageAlt(imgData);
     }
 
     function nextModalImage() {
         if (!allImages.length) return;
         currentModalIndex = (currentModalIndex + 1) % allImages.length;
-        modalImage.src = allImages[currentModalIndex].src;
+        const imgData = allImages[currentModalIndex];
+        modalImage.src = imgData.src;
+        modalImage.alt = getImageAlt(imgData);
     }
 
     if (modalImage) {
@@ -504,7 +528,7 @@
         initAllCarousels();
     }
 
-    // --- БЛОК ДЛЯ 152-ФЗ: МОДАЛЬНОЕ ОКНО ПОЛИТИКИ КОНФИДЕНЦИАЛЬНОСТИ ---
+    // --- БЛОК ДЛЯ 152-ФЗ: МОДАЛЬНОЕ ОКНО ПОЛИТИКИ КОНФИДЕНЦИАЛЬНОСТИ (исправленный, без дублей) ---
     const privacyModal = document.getElementById('privacyModal');
     const privacyModalCloseBtn = document.getElementById('privacyModalClose');
 
@@ -520,6 +544,18 @@
             privacyModal.classList.remove('show');
             document.body.style.overflow = '';
         }
+    }
+
+    // Назначаем обработчики на все ссылки с классом privacy-link (включая те, что будут добавлены динамически)
+    function bindPrivacyLinks() {
+        document.querySelectorAll('.privacy-link').forEach(link => {
+            // Убираем старые обработчики, чтобы не дублировать
+            link.removeEventListener('click', openPrivacyModal);
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                openPrivacyModal();
+            });
+        });
     }
 
     if (privacyModalCloseBtn) {
@@ -540,47 +576,7 @@
         }
     });
 
+    // Инициализация обработчиков для ссылок политики
+    bindPrivacyLinks();
+    // Если ссылки добавляются динамически (например, позже), можно использовать MutationObserver, но в данном случае они статичны.
 })();
-// --- РАБОТА ПОЛИТИКИ КОНФИДЕНЦИАЛЬНОСТИ (глобально) ---
-document.addEventListener('DOMContentLoaded', function() {
-    const privacyModal = document.getElementById('privacyModal');
-    if (!privacyModal) return;
-
-    // Функции открытия/закрытия
-    window.openPrivacyModal = function() {
-        privacyModal.classList.add('show');
-        document.body.style.overflow = 'hidden';
-    };
-    window.closePrivacyModal = function() {
-        privacyModal.classList.remove('show');
-        document.body.style.overflow = '';
-    };
-
-    // Назначаем обработчики на все ссылки с классом privacy-link
-    document.querySelectorAll('.privacy-link').forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            window.openPrivacyModal();
-        });
-    });
-
-    // Крестик закрытия
-    const closeBtn = document.getElementById('privacyModalClose');
-    if (closeBtn) {
-        closeBtn.addEventListener('click', window.closePrivacyModal);
-    }
-
-    // Клик вне окна
-    privacyModal.addEventListener('click', function(e) {
-        if (e.target === privacyModal) {
-            window.closePrivacyModal();
-        }
-    });
-
-    // Escape
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && privacyModal.classList.contains('show')) {
-            window.closePrivacyModal();
-        }
-    });
-});
